@@ -1,4 +1,4 @@
-import Routeee from "./Routes/routeee.jsx";
+import Routeee from "./Routes/Routeee";
 
 function App() {
   return <Routeee />;
