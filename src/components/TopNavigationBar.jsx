@@ -1,11 +1,38 @@
-import { Search, Bell, User, ChevronDown, Menu, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Bell, User, ChevronDown, Menu, X, LogOut, Settings } from "lucide-react";
 import CustomButton from "./ui/Button";
+import { useAuth } from "../context/AuthContext";
 
 export default function TopNavigationBar({
   sidebarOpen,
   setSidebarOpen,
   isScrolled,
 }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+    setDropdownOpen(false);
+  };
   return (
     <header
       className={`bg-white fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
@@ -33,27 +60,50 @@ export default function TopNavigationBar({
             </div>
           </div>
 
-          {/* Search */}
-          <div className="flex-1 max-w-2xl ml-8 hidden lg:block">
-            <div className="relative">
-              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="search"
-                placeholder="Search reports..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
-              />
-            </div>
-          </div>
-
           {/* User actions */}
           <div className="flex items-center gap-2">
             <CustomButton variant="icon">
               <Bell className="w-5 h-5" />
             </CustomButton>
-            <CustomButton variant="icon" className="flex items-center gap-1">
-              <User className="w-5 h-5" />
-              <ChevronDown className="w-4 h-4" />
-            </CustomButton>
+            {/* User Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <CustomButton
+                variant="icon"
+                className="flex items-center gap-1"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <User className="w-5 h-5" />
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${
+                    dropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </CustomButton>
+
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <button
+                    onClick={() => {
+                      navigate("/settings");
+                      setDropdownOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span>Settings</span>
+                  </button>
+                  <div className="border-t border-gray-200 my-1"></div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

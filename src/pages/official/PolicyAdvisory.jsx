@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { advisoryAlerts } from "../data/advisoryAlerts";
-import AlertCard from "../components/AlertCard";
+import { advisoryAlerts } from "../../data/advisoryAlerts";
+import AlertCard from "../../components/AlertCard";
 
 export default function PolicyAdvisory() {
   const [selectedCity, setSelectedCity] = useState("KPK");
@@ -81,3 +81,4 @@ export default function PolicyAdvisory() {
     </div>
   );
 }
+

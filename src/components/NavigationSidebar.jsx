@@ -1,9 +1,10 @@
-import { Globe } from "lucide-react";
+import { Globe, Settings as SettingsIcon, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import CustomButton from "./ui/Button";
 
 const navigationItems = [
   { icon: Globe, label: "National Dashboard", path: "/national-dashboard" },
+  { icon: SettingsIcon, label: "Settings", path: "/settings" },
 ];
 
 export default function NavigationSidebar({ isOpen, setOpen }) {
@@ -14,15 +15,25 @@ export default function NavigationSidebar({ isOpen, setOpen }) {
       } lg:translate-x-0 z-50`}
     >
       {/* Brand Logo */}
-      <div className="flex items-center mb-8">
-        <div className="bg-white/20 rounded-md p-1.5 mr-2">
-          <span className="font-bold text-sm">PA</span>
+      <div className="flex items-center justify-between mb-8 px-6">
+        <div className="flex items-center">
+          <div className="bg-white/20 rounded-md p-1.5 mr-2">
+            <span className="font-bold text-sm">PA</span>
+          </div>
+          <h1 className="text-xl font-semibold text-white">PakAir</h1>
         </div>
-        <h1 className="text-xl font-semibold text-white">PakAir</h1>
+        {/* Back button - only visible on small screens */}
+        <button
+          onClick={() => setOpen && setOpen(false)}
+          className="lg:hidden p-2 hover:bg-white/10 rounded-md transition-colors"
+          aria-label="Close sidebar"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex flex-col gap-0">
+      <nav className="flex flex-col gap-0 px-6 lg:px-0">
         {navigationItems.map((item) => (
           <Link
             key={item.label}
@@ -37,7 +48,7 @@ export default function NavigationSidebar({ isOpen, setOpen }) {
       </nav>
 
       {/* Help Section */}
-      <div className="mt-auto p-4">
+      <div className="mt-auto px-6 lg:px-0 p-4">
         <div className="bg-green-800 rounded-lg p-4 shadow-md">
           <h3 className="text-sm font-semibold text-white mb-2">Need Help?</h3>
           <p className="text-xs text-gray-200">

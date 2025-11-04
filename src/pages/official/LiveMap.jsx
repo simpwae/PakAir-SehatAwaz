@@ -1,4 +1,4 @@
-import PageHeader from "../components/PageHeader";
+import PageHeader from "../../components/PageHeader";
 
 export default function LiveMap() {
   return (
@@ -56,3 +56,4 @@ export default function LiveMap() {
     </div>
   );
 }
+

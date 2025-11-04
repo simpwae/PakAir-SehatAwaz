@@ -31,6 +31,21 @@ const reports = [
     time: "4 hours ago",
     verified: true,
   },
+  {
+    id: 5,
+    img: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400",
+    location: "University Town, Peshawar",
+    title: "Heavy smog in the morning. Visibility reduced significantly.",
+    time: "5 hours ago",
+    verified: false,
+  }, {
+    id: 6,
+    img: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400",
+    location: "University Town, Peshawar",
+    title: "Heavy smog in the morning. Visibility reduced significantly.",
+    time: "4 hours ago",
+    verified: false,
+  },
 ];
 
 export default reports;

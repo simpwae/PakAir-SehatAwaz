@@ -1,5 +1,5 @@
-import PageHeader from "../components/PageHeader";
-import PolicyAdvisoryPanel from "../components/PolicyAdvisoryPanel";
+import PageHeader from "../../components/PageHeader";
+import PolicyAdvisoryPanel from "../../components/PolicyAdvisoryPanel";
 import CitizenReports from "./CitizenReports";
 import LiveMap from "./LiveMap";
 import { useState } from "react";
@@ -53,3 +53,4 @@ export default function NationalDashboard() {
     </div>
   );
 }
+
