@@ -4,8 +4,10 @@ import SettingsPage from "../pages/official/SettingsPage";
 import LoginOfficial from "../pages/official/LoginOfficial";
 import LoginPage from "../pages/citizen/LoginPage";
 import SignupPage from "../pages/citizen/SignupPage";
+import Dashboard from "../pages/citizen/Dashboard";
 import NavigationSidebar from "../components/NavigationSidebar";
 import TopNavigationBar from "../components/TopNavigationBar";
+import CitizenLayout from "../layouts/CitizenLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { useState } from "react";
 
@@ -29,6 +31,16 @@ function Routeee() {
         element={
           <ProtectedRoute requireAuth={false}>
             <SignupPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/citizen/dashboard"
+        element={
+          <ProtectedRoute requireAuth={false}>
+            <CitizenLayout>
+              <Dashboard />
+            </CitizenLayout>
           </ProtectedRoute>
         }
       />
