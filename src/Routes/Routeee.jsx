@@ -5,11 +5,17 @@ import LoginOfficial from "../pages/official/LoginOfficial";
 import LoginPage from "../pages/citizen/LoginPage";
 import SignupPage from "../pages/citizen/SignupPage";
 import Dashboard from "../pages/citizen/Dashboard";
+import CitizenHealthGuidance from "../pages/citizen/HealthGuidance";
+import CitizenRegionalMap from "../pages/citizen/RegionalMap";
+import CitizenReportSmog from "../pages/citizen/ReportSmog";
+import CitizenSettings from "../pages/citizen/Settings";
 import NavigationSidebar from "../components/NavigationSidebar";
 import TopNavigationBar from "../components/TopNavigationBar";
 import CitizenLayout from "../layouts/CitizenLayout";
+import OfficialLayout from "../layouts/OfficialLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { useState } from "react";
+import Logout from "../pages/Logout";
 
 function Routeee() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,11 +41,18 @@ function Routeee() {
         }
       />
       <Route
-        path="/citizen/dashboard"
+        path="/citizen/*"
         element={
-          <ProtectedRoute requireAuth={false}>
+          <ProtectedRoute>
             <CitizenLayout>
-              <Dashboard />
+              <Routes>
+                <Route path="/" element={<Navigate to="/citizen/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/report" element={<CitizenReportSmog />} />
+                <Route path="/health" element={<CitizenHealthGuidance />} />
+                <Route path="/map" element={<CitizenRegionalMap />} />
+                <Route path="/settings" element={<CitizenSettings />} />
+              </Routes>
             </CitizenLayout>
           </ProtectedRoute>
         }
@@ -60,40 +73,32 @@ function Routeee() {
         path="/"
         element={<Navigate to="/login" replace />}
       />
+
+      {/* Always-available logout route */}
+      <Route path="/logout" element={<Logout />} />
+
+      {/* Legacy redirects for previously un-namespaced official routes */}
+      <Route path="/national-dashboard" element={<Navigate to="/official/national-dashboard" replace />} />
+      <Route path="/health-guidance" element={<Navigate to="/citizen/health" replace />} />
+      <Route path="/regional-map" element={<Navigate to="/citizen/map" replace />} />
+      <Route path="/report-smog" element={<Navigate to="/citizen/report" replace />} />
+      <Route path="/settings" element={<Navigate to="/official/settings" replace />} />
       
-      {/* Protected routes - Dashboard */}
+      {/* Protected routes - Official area */}
       <Route
-        path="/*"
+        path="/official/*"
         element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50">
-              <TopNavigationBar
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-                isScrolled={isScrolled}
-              />
-              <NavigationSidebar isOpen={sidebarOpen} setOpen={setSidebarOpen} />
-
-              {/* Mobile Overlay */}
-              {sidebarOpen && (
-                <div
-                  className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
-                  onClick={() => setSidebarOpen(false)}
+            <OfficialLayout>
+              <Routes>
+                <Route
+                  path="/"
+                  element={<Navigate to="/official/national-dashboard" replace />}
                 />
-              )}
-
-              {/* Main content */}
-              <main className="lg:ml-72 pt-16">
-                <Routes>
-                  <Route
-                    path="/"
-                    element={<Navigate to="/national-dashboard" replace />}
-                  />
-                  <Route path="/national-dashboard" element={<NationalDashboard />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                </Routes>
-              </main>
-            </div>
+                <Route path="/national-dashboard" element={<NationalDashboard />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Routes>
+            </OfficialLayout>
           </ProtectedRoute>
         }
       />

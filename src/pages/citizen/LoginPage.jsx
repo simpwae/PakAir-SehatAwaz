@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 function LoginPage() {
   const [language, setLanguage] = useState("English");
@@ -10,7 +11,9 @@ function LoginPage() {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const [authError, setAuthError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +27,7 @@ function LoginPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -42,10 +45,16 @@ function LoginPage() {
       return;
     }
 
-    // Handle login logic here
-    console.log("Login data:", formData);
-    // Navigate to dashboard after successful login
-    // navigate("/citizen/dashboard");
+    // Attempt login using mock users
+    setAuthError("");
+    const res = await login(formData.email, formData.password);
+    if (!res.ok) {
+      setAuthError(res.message || "Login failed");
+      return;
+    }
+
+    // Navigate to citizen dashboard
+    navigate("/citizen/dashboard");
   };
 
   return (
@@ -232,6 +241,9 @@ function LoginPage() {
             >
               Log in
             </button>
+            {authError && (
+              <p className="text-red-600 text-sm text-center mt-3">{authError}</p>
+            )}
           </form>
 
           {/* Links */}

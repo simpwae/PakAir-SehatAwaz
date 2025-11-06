@@ -2,7 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProtectedRoute({ children, requireAuth = true }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -20,7 +20,10 @@ export default function ProtectedRoute({ children, requireAuth = true }) {
 
   // If route doesn't require auth (like login page) and user is authenticated, redirect to dashboard
   if (!requireAuth && isAuthenticated) {
-    return <Navigate to="/national-dashboard" replace />;
+    if (user?.role === 'citizen') {
+      return <Navigate to="/citizen/dashboard" replace />;
+    }
+    return <Navigate to="/official/national-dashboard" replace />;
   }
 
   return children;

@@ -1,0 +1,122 @@
+
+[
+  {
+    "University": "National University of Computer and Emerging Sciences",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 145
+  },
+  {
+    "University": "National University of Modern Languages",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 98
+  },
+  {
+    "University": "Islamia College University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 127
+  },
+  {
+    "University": "University of Peshawar",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 112
+  },
+  {
+    "University": "University of Engineering and Technology, Peshawar",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 156
+  },
+  {
+    "University": "University of Agriculture, Peshawar",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 134
+  },
+  {
+    "University": "Preston University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 88
+  },
+  {
+    "University": "CECOS University of Information Technology and Emerging Sciences",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 173
+  },
+  {
+    "University": "Qurtuba University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 105
+  },
+  {
+    "University": "Sarhad University of Science and Information Technology",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 122
+  },
+  {
+    "University": "City University of Science and Information Technology, Peshawar",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 162
+  },
+  {
+    "University": "Gandhara University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 147
+  },
+  {
+    "University": "Institute of Management Sciences Peshawar",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 77
+  },
+  {
+    "University": "Shaheed Benazir Bhutto Women University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 186
+  },
+  {
+    "University": "Khyber Medical University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 119
+  },
+  {
+    "University": "Abasyn University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 139
+  },
+  {
+    "University": "IQRA National University",
+    "Campus": "Peshawar",
+    "Latitude": 34.0123846,
+    "Longitude": 71.5787458,
+    "AQI": 95
+  }
+]

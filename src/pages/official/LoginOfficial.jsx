@@ -11,7 +11,7 @@ function LoginOfficial() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -21,18 +21,15 @@ function LoginOfficial() {
       return;
     }
 
-    // Validate credentials
-    const validEmail = "naqashamjad777@gmail.com";
-    const validPassword = "571234";
-
-    if (email.trim() !== validEmail || password !== validPassword) {
-      setError("Invalid email or password. Please try again.");
+    // Attempt login against mock users
+    const res = await login(email, password);
+    if (!res.ok) {
+      setError(res.message || "Login failed");
       return;
     }
 
-    // Successful login
-    login();
-    navigate("/national-dashboard");
+    // Navigate to official dashboard (namespaced)
+    navigate("/official/national-dashboard");
   };
 
   return (

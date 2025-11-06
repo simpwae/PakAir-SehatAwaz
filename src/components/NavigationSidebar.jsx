@@ -1,10 +1,17 @@
-import { Globe, Settings as SettingsIcon, ChevronLeft } from "lucide-react";
+import {
+  Globe,
+  Settings as SettingsIcon,
+  ChevronLeft,
+  HeartPulse,
+  Map as MapIcon,
+  CloudFog,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import CustomButton from "./ui/Button";
 
 const navigationItems = [
-  { icon: Globe, label: "National Dashboard", path: "/national-dashboard" },
-  { icon: SettingsIcon, label: "Settings", path: "/settings" },
+  { icon: Globe, label: "National Dashboard", path: "/official/national-dashboard" },
+  { icon: SettingsIcon, label: "Settings", path: "/official/settings" },
 ];
 
 export default function NavigationSidebar({ isOpen, setOpen }) {
