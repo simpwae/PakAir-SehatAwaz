@@ -45,7 +45,7 @@ function LoginPage() {
       return;
     }
 
-    // Attempt login using mock users
+    // Attempt login using backend API
     setAuthError("");
     const res = await login(formData.email, formData.password);
     if (!res.ok) {
@@ -53,8 +53,13 @@ function LoginPage() {
       return;
     }
 
-    // Navigate to citizen dashboard
-    navigate("/citizen/dashboard");
+    // Navigate based on user role
+    const storedUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
+    if (storedUser.role === 'official') {
+      navigate("/official/dashboard");
+    } else {
+      navigate("/citizen/dashboard");
+    }
   };
 
   return (

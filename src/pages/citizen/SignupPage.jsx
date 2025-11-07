@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 function SignupPage() {
   const [language, setLanguage] = useState("English");
@@ -14,7 +15,9 @@ function SignupPage() {
     agreeToTerms: false,
   });
   const [errors, setErrors] = useState({});
+  const [authError, setAuthError] = useState("");
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,7 +31,7 @@ function SignupPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -54,10 +57,16 @@ function SignupPage() {
       return;
     }
 
-    // Handle signup logic here
-    console.log("Signup data:", formData);
-    // Navigate to login or dashboard after successful signup
-    navigate("/citizen/login");
+    // Handle signup using backend API
+    setAuthError("");
+    const res = await register(formData);
+    if (!res.ok) {
+      setAuthError(res.message || "Registration failed");
+      return;
+    }
+
+    // Navigate to dashboard after successful signup
+    navigate("/citizen/dashboard");
   };
 
   return (
@@ -313,6 +322,9 @@ function SignupPage() {
             >
               Create account
             </button>
+            {authError && (
+              <p className="text-red-600 text-sm text-center mt-3">{authError}</p>
+            )}
           </form>
 
           {/* Links */}

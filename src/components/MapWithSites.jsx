@@ -1,7 +1,13 @@
 import { useEffect, useRef } from "react";
 
 // Expected site shape: { id, name, lat, lon, aqi }
-export default function MapWithSites({ sites = [], height = 520 }) {
+export default function MapWithSites({
+  sites = [],
+  height = 520,
+  initialCenter = [34.0151, 71.5249],
+  initialZoom = 12,
+  onMapReady,
+}) {
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
 
@@ -23,8 +29,8 @@ export default function MapWithSites({ sites = [], height = 520 }) {
     // Initialize map once
     if (!leafletMapRef.current) {
       leafletMapRef.current = L.map(mapRef.current, {
-        center: [30.35, 69.35], // Pakistan approx center
-        zoom: 5,
+        center: initialCenter,
+        zoom: initialZoom,
         zoomControl: true,
       });
 
@@ -32,6 +38,7 @@ export default function MapWithSites({ sites = [], height = 520 }) {
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap contributors",
       }).addTo(leafletMapRef.current);
+      if (onMapReady) onMapReady(leafletMapRef.current);
     }
 
     const map = leafletMapRef.current;
@@ -64,6 +71,9 @@ export default function MapWithSites({ sites = [], height = 520 }) {
         aqi ?? "N/A"
       }</div>`;
       circle.bindPopup(popup);
+      circle.on('click', () => {
+        try { map.flyTo([jitterLat, jitterLon], Math.max(map.getZoom(), 13), { duration: 0.6 }); } catch {}
+      });
       group.addLayer(circle);
     });
 

@@ -5,6 +5,8 @@ import { geocodeUniversities } from "../../utils/geocode";
 export default function RegionalMap() {
   const [sites, setSites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [city, setCity] = useState("Peshawar");
+  const mapRef = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -48,8 +50,18 @@ export default function RegionalMap() {
               <option>KPK</option>
               <option>Balochistan</option>
             </select>
-            <select className="px-3 py-2 bg-gray-50 border rounded-md text-sm">
-              <option>All Cities</option>
+            <select
+              className="px-3 py-2 bg-gray-50 border rounded-md text-sm"
+              value={city}
+              onChange={(e) => {
+                const val = e.target.value;
+                setCity(val);
+                if (val === "Peshawar" && mapRef[0]) {
+                  try { mapRef[0].flyTo([34.0151, 71.5249], 12, { duration: 0.6 }); } catch {}
+                }
+              }}
+            >
+              <option>Peshawar</option>
               <option>Lahore</option>
               <option>Karachi</option>
               <option>Islamabad</option>
@@ -71,7 +83,13 @@ export default function RegionalMap() {
             {loading ? (
               <div className="h-[520px] flex items-center justify-center text-sm text-gray-500">Loading map…</div>
             ) : (
-              <MapWithSites sites={sites} height={520} />
+              <MapWithSites
+                sites={sites}
+                height={520}
+                initialCenter={[34.0151, 71.5249]}
+                initialZoom={12}
+                onMapReady={(m) => { mapRef[0] = m; }}
+              />
             )}
           </div>
         </div>

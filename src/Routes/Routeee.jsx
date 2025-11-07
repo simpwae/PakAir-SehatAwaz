@@ -46,7 +46,7 @@ function Routeee() {
           <ProtectedRoute>
             <CitizenLayout>
               <Routes>
-                <Route path="/" element={<Navigate to="/citizen/dashboard" replace />} />
+                <Route path="/" element={<Navigate to="/citizen/logind" replace />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/report" element={<CitizenReportSmog />} />
                 <Route path="/health" element={<CitizenHealthGuidance />} />
@@ -68,10 +68,10 @@ function Routeee() {
         }
       />
       
-      {/* Default route - redirect to official login if not authenticated */}
+      {/* Default route - redirect to citizen login if not authenticated */}
       <Route
         path="/"
-        element={<Navigate to="/login" replace />}
+        element={<Navigate to="/citizen/login" replace />}
       />
 
       {/* Always-available logout route */}

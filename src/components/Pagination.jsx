@@ -1,8 +1,15 @@
-export default function Pagination({ currentPage = 1, totalPages = 3 }) {
+export default function Pagination({ currentPage = 1, totalPages = 3, onPageChange }) {
+  const handlePageChange = (page) => {
+    if (onPageChange && page >= 1 && page <= totalPages) {
+      onPageChange(page);
+    }
+  };
+
   return (
     <div className="mt-8 flex justify-center">
       <nav className="flex items-center gap-1">
         <button
+          onClick={() => handlePageChange(currentPage - 1)}
           className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={currentPage === 1}
           aria-label="Previous page"
@@ -24,6 +31,7 @@ export default function Pagination({ currentPage = 1, totalPages = 3 }) {
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button
             key={page}
+            onClick={() => handlePageChange(page)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               page === currentPage
                 ? "bg-primary-500 text-white"
@@ -34,6 +42,7 @@ export default function Pagination({ currentPage = 1, totalPages = 3 }) {
           </button>
         ))}
         <button
+          onClick={() => handlePageChange(currentPage + 1)}
           className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={currentPage === totalPages}
           aria-label="Next page"

@@ -11,15 +11,15 @@ export const officialUsers = [
 export const citizenUsers = [
   {
     id: 101,
-    name: "Citizen One",
-    email: "citizen1@example.com",
+    name: "Zain Khan",
+    email: "zain@example.com",
     password: "password123",
     role: "citizen",
   },
   {
     id: 102,
-    name: "Citizen Two",
-    email: "citizen2@example.com",
+    name: "Mushtaq Khan",
+    email: "mushtaq@example.com",
     password: "password123",
     role: "citizen",
   },
