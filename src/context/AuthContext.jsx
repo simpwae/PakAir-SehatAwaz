@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../utils/api';
+import { createContext, useContext, useState, useEffect } from "react";
+import { authAPI } from "../utils/api";
 
 const AuthContext = createContext();
 
@@ -11,9 +11,9 @@ export function AuthProvider({ children }) {
   // Check if user is logged in on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('auth_token');
-      const storedUser = localStorage.getItem('auth_user');
-      
+      const token = localStorage.getItem("auth_token");
+      const storedUser = localStorage.getItem("auth_user");
+
       if (token && storedUser) {
         try {
           const parsed = JSON.parse(storedUser);
@@ -21,31 +21,37 @@ export function AuthProvider({ children }) {
           try {
             const response = await authAPI.getMe();
             if (response.success) {
+              try {
+                console.debug(
+                  "AuthContext.checkAuth: getMe role ->",
+                  response.user?.role
+                );
+              } catch (e) {}
               setUser(response.user);
               setIsAuthenticated(true);
               // Update stored user data
-              localStorage.setItem('auth_user', JSON.stringify(response.user));
+              localStorage.setItem("auth_user", JSON.stringify(response.user));
             } else {
               // Token invalid, clear storage
-              localStorage.removeItem('auth_token');
-              localStorage.removeItem('auth_user');
-              localStorage.removeItem('isAuthenticated');
+              localStorage.removeItem("auth_token");
+              localStorage.removeItem("auth_user");
+              localStorage.removeItem("isAuthenticated");
             }
           } catch (error) {
             // Token invalid or expired
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('auth_user');
-            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem("auth_token");
+            localStorage.removeItem("auth_user");
+            localStorage.removeItem("isAuthenticated");
           }
         } catch (e) {
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('auth_user');
-          localStorage.removeItem('isAuthenticated');
+          localStorage.removeItem("auth_token");
+          localStorage.removeItem("auth_user");
+          localStorage.removeItem("isAuthenticated");
         }
       }
       setIsLoading(false);
     };
-    
+
     checkAuth();
   }, []);
 
@@ -53,17 +59,36 @@ export function AuthProvider({ children }) {
     try {
       const response = await authAPI.login(email, password);
       if (response.success && response.token && response.user) {
+        // debug: log role returned from server
+        try {
+          console.debug(
+            "AuthContext.login: server role ->",
+            response.user?.role
+          );
+        } catch (e) {}
+        // Ensure role is present and valid
+        let ensuredUser = response.user;
+        if (
+          !ensuredUser.role ||
+          !["citizen", "official"].includes(ensuredUser.role)
+        ) {
+          // Default to citizen if role is missing or invalid
+          ensuredUser = { ...ensuredUser, role: "citizen" };
+        }
         setIsAuthenticated(true);
-        setUser(response.user);
-        localStorage.setItem('auth_token', response.token);
-        localStorage.setItem('auth_user', JSON.stringify(response.user));
-        localStorage.setItem('isAuthenticated', 'true');
-        return { ok: true };
+        setUser(ensuredUser);
+        localStorage.setItem("auth_token", response.token);
+        localStorage.setItem("auth_user", JSON.stringify(ensuredUser));
+        localStorage.setItem("isAuthenticated", "true");
+        return { ok: true, user: ensuredUser };
       } else {
-        return { ok: false, message: response.message || 'Login failed' };
+        return { ok: false, message: response.message || "Login failed" };
       }
     } catch (error) {
-      const message = error.response?.data?.message || error.message || 'Login failed. Please try again.';
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Login failed. Please try again.";
       return { ok: false, message };
     }
   };
@@ -74,15 +99,21 @@ export function AuthProvider({ children }) {
       if (response.success && response.token && response.user) {
         setIsAuthenticated(true);
         setUser(response.user);
-        localStorage.setItem('auth_token', response.token);
-        localStorage.setItem('auth_user', JSON.stringify(response.user));
-        localStorage.setItem('isAuthenticated', 'true');
-        return { ok: true };
+        localStorage.setItem("auth_token", response.token);
+        localStorage.setItem("auth_user", JSON.stringify(response.user));
+        localStorage.setItem("isAuthenticated", "true");
+        return { ok: true, user: response.user };
       } else {
-        return { ok: false, message: response.message || 'Registration failed' };
+        return {
+          ok: false,
+          message: response.message || "Registration failed",
+        };
       }
     } catch (error) {
-      const message = error.response?.data?.message || error.message || 'Registration failed. Please try again.';
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Registration failed. Please try again.";
       return { ok: false, message };
     }
   };
@@ -90,13 +121,15 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    localStorage.removeItem("isAuthenticated");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, isLoading, user, login, register, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -105,8 +138,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
-

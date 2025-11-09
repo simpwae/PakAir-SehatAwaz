@@ -1,10 +1,18 @@
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
 import TopNavigationBar from "../components/TopNavigationBar";
 import NavigationSidebar from "../components/NavigationSidebar";
+import { useAuth } from "../context/AuthContext";
 
 export default function OfficialLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isScrolled] = useState(false);
+  const { isAuthenticated, user } = useAuth();
+
+  // Protect official layout - redirect non-officials back to citizen login
+  if (!isAuthenticated || user?.role !== "official") {
+    return <Navigate to="/citizen/login" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

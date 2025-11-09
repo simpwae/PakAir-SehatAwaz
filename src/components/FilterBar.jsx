@@ -1,14 +1,29 @@
 import { ChevronDown, Calendar, Filter } from "lucide-react";
+import { useFilters } from "../context/FilterContext";
 
 export default function FilterBar() {
+  const { filters, update } = useFilters();
+
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 mb-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-        <FilterSelect label="Province" options={["KPK", "Punjab", "Sindh"]} />
-        <FilterSelect label="City" options={["Peshawar", "Mardan", "Swat"]} />
+        <FilterSelect
+          label="Province"
+          options={["KPK", "Punjab", "Sindh"]}
+          value={filters.province}
+          onChange={(v) => update({ province: v })}
+        />
+        <FilterSelect
+          label="City"
+          options={["Peshawar", "Mardan", "Swat"]}
+          value={filters.city}
+          onChange={(v) => update({ city: v })}
+        />
         <FilterSelect
           label="Time"
           options={["Current", "Past Week", "Past Month"]}
+          value={filters.time}
+          onChange={(v) => update({ time: v })}
         />
 
         <button className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 rounded-lg text-sm hover:border-primary-300 hover:bg-primary-50 focus:ring-2 focus:ring-primary-500/20 transition-all group">
@@ -25,15 +40,19 @@ export default function FilterBar() {
   );
 }
 
-function FilterSelect({ label, options }) {
+function FilterSelect({ label, options, value, onChange }) {
   return (
     <div className="relative flex-1 min-w-[120px]">
       <select
+        value={value}
+        onChange={(e) => onChange && onChange(e.target.value)}
         className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm appearance-none bg-transparent hover:border-primary-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
         aria-label={label}
       >
         {options.map((option) => (
-          <option key={option}>{option}</option>
+          <option key={option} value={option}>
+            {option}
+          </option>
         ))}
       </select>
       <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />

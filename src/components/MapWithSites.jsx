@@ -7,6 +7,7 @@ export default function MapWithSites({
   initialCenter = [34.0151, 71.5249],
   initialZoom = 12,
   onMapReady,
+  onMarkerClick, // optional callback when a marker is clicked: (site) => void
 }) {
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
@@ -71,8 +72,15 @@ export default function MapWithSites({
         aqi ?? "N/A"
       }</div>`;
       circle.bindPopup(popup);
-      circle.on('click', () => {
-        try { map.flyTo([jitterLat, jitterLon], Math.max(map.getZoom(), 13), { duration: 0.6 }); } catch {}
+      circle.on("click", () => {
+        try {
+          map.flyTo([jitterLat, jitterLon], Math.max(map.getZoom(), 13), {
+            duration: 0.6,
+          });
+        } catch {}
+        try {
+          if (onMarkerClick) onMarkerClick(s);
+        } catch {}
       });
       group.addLayer(circle);
     });
@@ -89,7 +97,9 @@ export default function MapWithSites({
 
     // Cleanup on rerender: remove layer group
     return () => {
-      try { map.removeLayer(group); } catch {}
+      try {
+        map.removeLayer(group);
+      } catch {}
     };
   }, [sites]);
 
@@ -100,12 +110,48 @@ export default function MapWithSites({
       <div className="absolute right-4 bottom-4 bg-white/90 rounded-md p-3 text-xs shadow">
         <div className="font-semibold mb-2">AQI Levels</div>
         <ul className="space-y-1">
-          <li className="flex items-center gap-2"><span className="w-2 h-2 rounded-full" style={{background:'#22c55e'}}/> Good (0-50)</li>
-          <li className="flex items-center gap-2"><span className="w-2 h-2 rounded-full" style={{background:'#eab308'}}/> Moderate (51-100)</li>
-          <li className="flex items-center gap-2"><span className="w-2 h-2 rounded-full" style={{background:'#f97316'}}/> Unhealthy-SG (101-150)</li>
-          <li className="flex items-center gap-2"><span className="w-2 h-2 rounded-full" style={{background:'#ef4444'}}/> Unhealthy (151-200)</li>
-          <li className="flex items-center gap-2"><span className="w-2 h-2 rounded-full" style={{background:'#7c3aed'}}/> Very Unhealthy (201-300)</li>
-          <li className="flex items-center gap-2"><span className="w-2 h-2 rounded-full" style={{background:'#6b21a8'}}/> Hazardous (300+)</li>
+          <li className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: "#22c55e" }}
+            />{" "}
+            Good (0-50)
+          </li>
+          <li className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: "#eab308" }}
+            />{" "}
+            Moderate (51-100)
+          </li>
+          <li className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: "#f97316" }}
+            />{" "}
+            Unhealthy-SG (101-150)
+          </li>
+          <li className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: "#ef4444" }}
+            />{" "}
+            Unhealthy (151-200)
+          </li>
+          <li className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: "#7c3aed" }}
+            />{" "}
+            Very Unhealthy (201-300)
+          </li>
+          <li className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: "#6b21a8" }}
+            />{" "}
+            Hazardous (300+)
+          </li>
         </ul>
       </div>
     </div>

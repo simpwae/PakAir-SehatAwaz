@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { MapPin, Cloud, Sun, Thermometer, Wind, AlertCircle, Camera } from "lucide-react";
+import {
+  MapPin,
+  Cloud,
+  Sun,
+  Thermometer,
+  Wind,
+  AlertCircle,
+  Camera,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 function Dashboard() {
@@ -52,11 +60,16 @@ function Dashboard() {
     const chartHeight = height - 20;
     const padding = 20;
 
-    const points = data.map((point, index) => {
-      const x = padding + (index / (data.length - 1)) * chartWidth;
-      const y = padding + chartHeight - ((point.value - minValue) / (maxValue - minValue)) * chartHeight;
-      return `${x},${y}`;
-    }).join(" ");
+    const points = data
+      .map((point, index) => {
+        const x = padding + (index / (data.length - 1)) * chartWidth;
+        const y =
+          padding +
+          chartHeight -
+          ((point.value - minValue) / (maxValue - minValue)) * chartHeight;
+        return `${x},${y}`;
+      })
+      .join(" ");
 
     return (
       <svg width={width} height={height} className="w-full h-full">
@@ -68,16 +81,11 @@ function Dashboard() {
         />
         {data.map((point, index) => {
           const x = padding + (index / (data.length - 1)) * chartWidth;
-          const y = padding + chartHeight - ((point.value - minValue) / (maxValue - minValue)) * chartHeight;
-          return (
-            <circle
-              key={index}
-              cx={x}
-              cy={y}
-              r="3"
-              fill="#6366f1"
-            />
-          );
+          const y =
+            padding +
+            chartHeight -
+            ((point.value - minValue) / (maxValue - minValue)) * chartHeight;
+          return <circle key={index} cx={x} cy={y} r="3" fill="#6366f1" />;
         })}
       </svg>
     );
@@ -96,7 +104,8 @@ function Dashboard() {
       <svg width={width} height={height} className="w-full h-full">
         {data.map((point, index) => {
           const x = padding + index * (chartWidth / data.length) + 2;
-          const barHeight = ((point.value - minValue) / (maxValue - minValue)) * chartHeight;
+          const barHeight =
+            ((point.value - minValue) / (maxValue - minValue)) * chartHeight;
           const y = padding + chartHeight - barHeight;
           return (
             <rect
@@ -121,7 +130,11 @@ function Dashboard() {
     <div className="bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* AQI Header Card */}
-        <div className={`${getAQIColor(aqiValue)} text-white rounded-xl shadow-lg p-6 md:p-8`}>
+        <div
+          className={`${getAQIColor(
+            aqiValue
+          )} text-white rounded-xl shadow-lg p-6 md:p-8`}
+        >
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5" />
@@ -129,20 +142,27 @@ function Dashboard() {
             </div>
           </div>
           <div className="mb-4">
-            <div className="text-6xl md:text-7xl font-bold mb-2">{aqiValue}</div>
-            <div className="text-2xl md:text-3xl font-semibold">{getAQIStatus(aqiValue)}</div>
+            <div className="text-6xl md:text-7xl font-bold mb-2">
+              {aqiValue}
+            </div>
+            <div className="text-2xl md:text-3xl font-semibold">
+              {getAQIStatus(aqiValue)}
+            </div>
           </div>
           <div className="bg-red-800/50 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
             <p className="text-sm md:text-base">
-              Children and elderly should stay indoors. Wear a mask (N95) if going outside.
+              Children and elderly should stay indoors. Wear a mask (N95) if
+              going outside.
             </p>
           </div>
         </div>
 
         {/* Key Pollutants Section */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Key Pollutants</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Key Pollutants
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* PM2.5 */}
             <div className="bg-white rounded-xl shadow-md p-4">
@@ -168,7 +188,9 @@ function Dashboard() {
             <div className="bg-white rounded-xl shadow-md p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Thermometer className="w-5 h-5 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">Temperature</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Temperature
+                </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">18</div>
               <div className="text-xs text-gray-500">°C</div>
@@ -178,7 +200,9 @@ function Dashboard() {
             <div className="bg-white rounded-xl shadow-md p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Wind className="w-5 h-5 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">Wind Speed</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Wind Speed
+                </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">8</div>
               <div className="text-xs text-gray-500">km/h</div>
@@ -188,7 +212,9 @@ function Dashboard() {
 
         {/* Past 24 Hours Graph */}
         <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Past 24 Hours</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Past 24 Hours
+          </h2>
           <div className="h-64 md:h-80 relative">
             {/* Y-axis labels */}
             <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
@@ -198,7 +224,7 @@ function Dashboard() {
               <span>50</span>
               <span>0</span>
             </div>
-            
+
             {/* Chart area */}
             <div className="ml-8 h-full pb-8 relative">
               {/* Grid lines */}
@@ -207,34 +233,34 @@ function Dashboard() {
                   <div key={i} className="border-t border-gray-200"></div>
                 ))}
               </div>
-              
+
               {/* Line chart */}
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <svg
+                className="absolute inset-0 w-full h-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
                 <polyline
                   fill="none"
                   stroke="#6366f1"
                   strokeWidth="0.5"
-                  points={hourlyData.map((point, index) => {
-                    const x = (index / (hourlyData.length - 1)) * 100;
-                    const y = 100 - ((point.value / 200) * 100);
-                    return `${x},${y}`;
-                  }).join(" ")}
+                  points={hourlyData
+                    .map((point, index) => {
+                      const x = (index / (hourlyData.length - 1)) * 100;
+                      const y = 100 - (point.value / 200) * 100;
+                      return `${x},${y}`;
+                    })
+                    .join(" ")}
                 />
                 {hourlyData.map((point, index) => {
                   const x = (index / (hourlyData.length - 1)) * 100;
-                  const y = 100 - ((point.value / 200) * 100);
+                  const y = 100 - (point.value / 200) * 100;
                   return (
-                    <circle
-                      key={index}
-                      cx={x}
-                      cy={y}
-                      r="0.8"
-                      fill="#6366f1"
-                    />
+                    <circle key={index} cx={x} cy={y} r="0.8" fill="#6366f1" />
                   );
                 })}
               </svg>
-              
+
               {/* X-axis labels */}
               <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600">
                 {hourlyData.map((point, index) => (
@@ -248,7 +274,9 @@ function Dashboard() {
         {/* Weekly Trend Graph */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Weekly Trend</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Weekly Trend
+            </h2>
             <div className="flex gap-2">
               <button
                 onClick={() => setSelectedPeriod("Week")}
@@ -281,7 +309,7 @@ function Dashboard() {
               <span>50</span>
               <span>0</span>
             </div>
-            
+
             {/* Chart area */}
             <div className="ml-8 h-full pb-8 relative">
               {/* Grid lines */}
@@ -290,7 +318,7 @@ function Dashboard() {
                   <div key={i} className="border-t border-gray-200"></div>
                 ))}
               </div>
-              
+
               {/* Bar chart */}
               <div className="absolute inset-0 flex items-end justify-between gap-1">
                 {weeklyData.map((point, index) => (
@@ -304,11 +332,13 @@ function Dashboard() {
                   ></div>
                 ))}
               </div>
-              
+
               {/* X-axis labels */}
               <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600">
                 {weeklyData.map((point, index) => (
-                  <span key={index} className="font-semibold">{point.day}</span>
+                  <span key={index} className="font-semibold">
+                    {point.day}
+                  </span>
                 ))}
               </div>
             </div>
@@ -322,12 +352,16 @@ function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Monthly Insight Card */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Monthly Insight</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Monthly Insight
+            </h3>
             <p className="text-gray-700">
-              Average AQI this month: <span className="font-bold text-red-600">162 (Unhealthy)</span>.
+              Average AQI this month:{" "}
+              <span className="font-bold text-red-600">162 (Unhealthy)</span>.
             </p>
             <p className="text-gray-700 mt-2">
-              Weekend air quality <span className="font-bold text-green-600">18% better</span>.
+              Weekend air quality{" "}
+              <span className="font-bold text-green-600">18% better</span>.
             </p>
           </div>
 
@@ -355,4 +389,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import MapWithSites from "../../components/MapWithSites";
 import { geocodeUniversities } from "../../utils/geocode";
+import { useFilters } from "../../context/FilterContext";
 
 export default function LiveMap() {
   const [sites, setSites] = useState([]);
@@ -9,7 +10,10 @@ export default function LiveMap() {
   useEffect(() => {
     const load = async () => {
       try {
-        const url = new URL("../../data/temp_mapSitesData.json", import.meta.url);
+        const url = new URL(
+          "../../data/temp_mapSitesData.json",
+          import.meta.url
+        );
         const res = await fetch(url);
         const data = await res.json().catch(() => []);
         const raw = Array.isArray(data) ? data : [];
@@ -30,6 +34,24 @@ export default function LiveMap() {
     };
     load();
   }, []);
+  const { filters } = useFilters();
+
+  const filteredSites = useMemo(() => {
+    if (!filters || !filters.city) return sites;
+    const city = filters.city.toString().toLowerCase();
+    if (!city || city === "all") return sites;
+    return sites.filter((s) => {
+      const campus = (s.Campus || s.campus || s.city || "")
+        .toString()
+        .toLowerCase();
+      const uni = (s.University || s.name || "").toString().toLowerCase();
+      return (
+        campus.includes(city) ||
+        uni.includes(city) ||
+        (s.name || "").toLowerCase().includes(city)
+      );
+    });
+  }, [sites, filters]);
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -63,13 +85,17 @@ export default function LiveMap() {
         <div className="lg:col-span-2 bg-white rounded-lg shadow overflow-hidden">
           <div className="p-4 border-b">
             <h2 className="text-lg font-semibold">Live Map</h2>
-            <p className="text-sm text-gray-500">Colored markers by AQI from data/temp_mapSitesData.json</p>
+            <p className="text-sm text-gray-500">
+              Colored markers by AQI from data/temp_mapSitesData.json
+            </p>
           </div>
           <div className="w-full">
             {loading ? (
-              <div className="h-[480px] flex items-center justify-center text-sm text-gray-500">Loading map…</div>
+              <div className="h-[480px] flex items-center justify-center text-sm text-gray-500">
+                Loading map…
+              </div>
             ) : (
-              <MapWithSites sites={sites} height={480} />
+              <MapWithSites sites={filteredSites} height={480} />
             )}
           </div>
         </div>
@@ -77,4 +103,3 @@ export default function LiveMap() {
     </div>
   );
 }
-

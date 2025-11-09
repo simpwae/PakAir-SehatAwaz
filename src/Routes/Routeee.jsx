@@ -23,7 +23,17 @@ function Routeee() {
 
   return (
     <Routes>
-      {/* Public routes - Citizen pages */}
+      {/* Public landing route - redirects based on auth status */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute requireAuth={false}>
+            <Navigate to="/citizen/login" replace />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Citizen Authentication Routes */}
       <Route
         path="/citizen/login"
         element={
@@ -43,15 +53,22 @@ function Routeee() {
       <Route
         path="/citizen/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requireAuth={true} allowedRoles={["citizen"]}>
             <CitizenLayout>
               <Routes>
-                <Route path="/" element={<Navigate to="/citizen/logind" replace />} />
+                <Route
+                  path="/"
+                  element={<Navigate to="/citizen/dashboard" replace />}
+                />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/report" element={<CitizenReportSmog />} />
                 <Route path="/health" element={<CitizenHealthGuidance />} />
                 <Route path="/map" element={<CitizenRegionalMap />} />
                 <Route path="/settings" element={<CitizenSettings />} />
+                <Route
+                  path="*"
+                  element={<Navigate to="/citizen/dashboard" replace />}
+                />
               </Routes>
             </CitizenLayout>
           </ProtectedRoute>
@@ -67,35 +84,37 @@ function Routeee() {
           </ProtectedRoute>
         }
       />
-      
-      {/* Default route - redirect to citizen login if not authenticated */}
-      <Route
-        path="/"
-        element={<Navigate to="/citizen/login" replace />}
-      />
 
       {/* Always-available logout route */}
       <Route path="/logout" element={<Logout />} />
 
-      {/* Legacy redirects for previously un-namespaced official routes */}
-      <Route path="/national-dashboard" element={<Navigate to="/official/national-dashboard" replace />} />
-      <Route path="/health-guidance" element={<Navigate to="/citizen/health" replace />} />
-      <Route path="/regional-map" element={<Navigate to="/citizen/map" replace />} />
-      <Route path="/report-smog" element={<Navigate to="/citizen/report" replace />} />
-      <Route path="/settings" element={<Navigate to="/official/settings" replace />} />
-      
+      {/* Catch all undefined routes and redirect to appropriate login */}
+      <Route
+        path="*"
+        element={
+          <ProtectedRoute requireAuth={false}>
+            <Navigate to="/citizen/login" replace />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Protected routes - Official area */}
       <Route
         path="/official/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["official"]}>
             <OfficialLayout>
               <Routes>
                 <Route
                   path="/"
-                  element={<Navigate to="/official/national-dashboard" replace />}
+                  element={
+                    <Navigate to="/official/national-dashboard" replace />
+                  }
                 />
-                <Route path="/national-dashboard" element={<NationalDashboard />} />
+                <Route
+                  path="/national-dashboard"
+                  element={<NationalDashboard />}
+                />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </OfficialLayout>

@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+/* Keep leaflet map behind UI overlays (sidebars/headers) on small screens.
+	 Leaflet sets high z-index on its controls by default; force map container
+	 to a low z-index so fixed sidebars (z-50) appear above it. On large screens
+	 we allow a small positive z-index so popups/controls remain usable. */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+@media (min-width: 1024px) {
+  .leaflet-container {
+    z-index: 10 !important;
+  }
+}

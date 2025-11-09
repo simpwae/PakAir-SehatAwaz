@@ -45,6 +45,11 @@ function LoginPage() {
       return;
     }
 
+    // Clear any stale auth to prevent role bleed from previous sessions
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    localStorage.removeItem("isAuthenticated");
+
     // Attempt login using backend API
     setAuthError("");
     const res = await login(formData.email, formData.password);
@@ -53,10 +58,9 @@ function LoginPage() {
       return;
     }
 
-    // Navigate based on user role
-    const storedUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
-    if (storedUser.role === 'official') {
-      navigate("/official/dashboard");
+    const role = res.user?.role;
+    if (role === "official") {
+      navigate("/official/national-dashboard");
     } else {
       navigate("/citizen/dashboard");
     }
@@ -65,11 +69,9 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Left Panel - Image & Branding */}
-      <div className="hidden lg:flex lg:w-3/5 relative bg-gradient-to-br from-green-500 to-green-700 overflow-hidden">
-        {/* Background Image Placeholder */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-green-600/40">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800')] bg-cover bg-center opacity-30"></div>
-        </div>
+      <div className="hidden lg:flex lg:w-3/5 relative bg-linear-to-br from-green-500 to-green-700 overflow-hidden">
+        {/* Green overlay */}
+        <div className="absolute inset-0 bg-linear-to-br from-green-400/20 to-green-600/40"></div>
 
         {/* Content Overlay */}
         <div className="relative z-10 flex flex-col justify-between p-8 h-full">
@@ -247,7 +249,9 @@ function LoginPage() {
               Log in
             </button>
             {authError && (
-              <p className="text-red-600 text-sm text-center mt-3">{authError}</p>
+              <p className="text-red-600 text-sm text-center mt-3">
+                {authError}
+              </p>
             )}
           </form>
 
@@ -279,4 +283,3 @@ function LoginPage() {
 }
 
 export default LoginPage;
-

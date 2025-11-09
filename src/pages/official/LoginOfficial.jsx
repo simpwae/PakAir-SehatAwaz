@@ -8,7 +8,7 @@ function LoginOfficial() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [language, setLanguage] = useState("English");
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,10 +21,22 @@ function LoginOfficial() {
       return;
     }
 
+    // Clear any stale auth to prevent role bleed from previous sessions
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    localStorage.removeItem('isAuthenticated');
+
     // Attempt login against mock users
     const res = await login(email, password);
     if (!res.ok) {
       setError(res.message || "Login failed");
+      return;
+    }
+
+    if (res.user?.role !== "official") {
+      setError("Access denied. This portal is for officials only.");
+      logout();
+      navigate("/citizen/login", { replace: true });
       return;
     }
 
