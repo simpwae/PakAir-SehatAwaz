@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MapPin,
   Cloud,
@@ -7,11 +7,19 @@ import {
   Wind,
   AlertCircle,
   Camera,
+  RefreshCw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAQI } from "../../context/AQIContext";
+import { useLanguage } from "../../context/LanguageContext";
+import { getLocationWithAddress } from "../../utils/locationService";
 
 function Dashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState("Week");
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [locationError, setLocationError] = useState("");
+  const { aqi, locationName, getAQIColor, getAQIStatus, refreshAQI, updateLocation } = useAQI();
+  const { t } = useLanguage();
 
   // Dummy data for 24-hour graph
   const hourlyData = [
@@ -36,21 +44,32 @@ function Dashboard() {
     { day: "Sun", value: 140 },
   ];
 
-  // Helper function to get AQI color
-  const getAQIColor = (aqi) => {
-    if (aqi >= 151) return "bg-red-600";
-    if (aqi >= 101) return "bg-orange-500";
-    if (aqi >= 51) return "bg-yellow-400";
-    return "bg-green-500";
-  };
+  // Load location on mount
+  useEffect(() => {
+    const loadLocation = async () => {
+      // Only load if we don't have location already
+      if (!locationName || locationName === "Unknown Location") {
+        setIsLoadingLocation(true);
+        setLocationError("");
+        try {
+          const locationData = await getLocationWithAddress();
+          updateLocation(
+            { latitude: locationData.latitude, longitude: locationData.longitude },
+            locationData.address
+          );
+        } catch (error) {
+          console.error("Location error:", error);
+          setLocationError(error.message);
+          // Set a default location if geolocation fails
+          updateLocation(null, "Location unavailable");
+        } finally {
+          setIsLoadingLocation(false);
+        }
+      }
+    };
 
-  // Helper function to get AQI status
-  const getAQIStatus = (aqi) => {
-    if (aqi >= 151) return "Unhealthy";
-    if (aqi >= 101) return "Unhealthy for Sensitive Groups";
-    if (aqi >= 51) return "Moderate";
-    return "Good";
-  };
+    loadLocation();
+  }, [locationName, updateLocation]);
 
   // Simple Line Chart Component
   const LineChart = ({ data, width = 100, height = 60 }) => {
@@ -123,37 +142,59 @@ function Dashboard() {
     );
   };
 
-  const aqiValue = 188;
-  const location = "Gulberg, Lahore";
+  // Get alert message based on AQI
+  const getAlertMessage = () => {
+    if (aqi >= 201) {
+      return t("dashboard.alertVeryUnhealthy");
+    } else if (aqi >= 151) {
+      return t("dashboard.alertUnhealthy");
+    } else if (aqi >= 101) {
+      return t("dashboard.alertSensitive");
+    } else if (aqi >= 51) {
+      return t("dashboard.alertModerate");
+    }
+    return t("dashboard.alertGood");
+  };
 
   return (
     <div className="bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* AQI Header Card */}
         <div
-          className={`${getAQIColor(
-            aqiValue
-          )} text-white rounded-xl shadow-lg p-6 md:p-8`}
+          className={`${getAQIColor()} text-white rounded-xl shadow-lg p-6 md:p-8`}
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5" />
-              <span className="text-lg font-medium">{location}</span>
+              {isLoadingLocation ? (
+                <span className="text-lg font-medium">{t("dashboard.loadingLocation")}</span>
+              ) : locationError ? (
+                <span className="text-lg font-medium">{t("dashboard.locationUnavailable")}</span>
+              ) : (
+                <span className="text-lg font-medium">{locationName}</span>
+              )}
             </div>
+            <button
+              onClick={refreshAQI}
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              title={t("dashboard.refreshAQI")}
+              aria-label={t("dashboard.refreshAQI")}
+            >
+              <RefreshCw className="w-5 h-5" />
+            </button>
           </div>
           <div className="mb-4">
             <div className="text-6xl md:text-7xl font-bold mb-2">
-              {aqiValue}
+              {aqi}
             </div>
             <div className="text-2xl md:text-3xl font-semibold">
-              {getAQIStatus(aqiValue)}
+              {getAQIStatus()}
             </div>
           </div>
-          <div className="bg-red-800/50 rounded-lg p-4 flex items-start gap-3">
+          <div className={`${getAQIColor()} bg-opacity-50 rounded-lg p-4 flex items-start gap-3`}>
             <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
             <p className="text-sm md:text-base">
-              Children and elderly should stay indoors. Wear a mask (N95) if
-              going outside.
+              {getAlertMessage()}
             </p>
           </div>
         </div>
@@ -161,7 +202,7 @@ function Dashboard() {
         {/* Key Pollutants Section */}
         <div>
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Key Pollutants
+            {t("dashboard.keyPollutants")}
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* PM2.5 */}
@@ -213,7 +254,7 @@ function Dashboard() {
         {/* Past 24 Hours Graph */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Past 24 Hours
+            {t("dashboard.past24Hours")}
           </h2>
           <div className="h-64 md:h-80 relative">
             {/* Y-axis labels */}
@@ -275,7 +316,7 @@ function Dashboard() {
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-800">
-              Weekly Trend
+              {t("dashboard.weeklyTrend")}
             </h2>
             <div className="flex gap-2">
               <button
@@ -286,7 +327,7 @@ function Dashboard() {
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                Week
+                {t("dashboard.week")}
               </button>
               <button
                 onClick={() => setSelectedPeriod("Month")}
@@ -296,7 +337,7 @@ function Dashboard() {
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                Month
+                {t("dashboard.month")}
               </button>
             </div>
           </div>
@@ -353,14 +394,14 @@ function Dashboard() {
           {/* Monthly Insight Card */}
           <div className="bg-white rounded-xl shadow-md p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Monthly Insight
+              {t("dashboard.monthlyInsight")}
             </h3>
             <p className="text-gray-700">
-              Average AQI this month:{" "}
-              <span className="font-bold text-red-600">162 (Unhealthy)</span>.
+              {t("dashboard.averageAQI")}:{" "}
+              <span className="font-bold text-red-600">162 ({t("dashboard.unhealthy")})</span>.
             </p>
             <p className="text-gray-700 mt-2">
-              Weekend air quality{" "}
+              {t("dashboard.weekendBetter")}{" "}
               <span className="font-bold text-green-600">18% better</span>.
             </p>
           </div>
@@ -371,14 +412,14 @@ function Dashboard() {
               <div className="flex items-center gap-3">
                 <Camera className="w-6 h-6" />
                 <p className="text-base md:text-lg font-medium">
-                  See heavy smog? Help us track it.
+                  {t("dashboard.seeHeavySmog")}
                 </p>
               </div>
               <Link
                 to="/citizen/report"
                 className="bg-white text-green-600 px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap"
               >
-                Report Now →
+                {t("dashboard.reportNow")} →
               </Link>
             </div>
           </div>

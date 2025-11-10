@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 function SignupPage() {
-  const [language, setLanguage] = useState("English");
+  const { t } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -114,37 +115,9 @@ function SignupPage() {
       {/* Right Panel - Signup Form */}
       <div className="w-full lg:w-2/5 bg-white flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
-          {/* Language Toggle */}
-          <div className="flex justify-end mb-6">
-            <div className="inline-flex bg-gray-100 rounded-lg p-1 gap-1">
-              <button
-                type="button"
-                onClick={() => setLanguage("English")}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  language === "English"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage("Urdu")}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  language === "Urdu"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                اردو
-              </button>
-            </div>
-          </div>
-
           {/* Title */}
           <h1 className="text-3xl font-bold text-gray-900 mb-8">
-            Create an Account
+            {t("auth.createAccount")}
           </h1>
          
 

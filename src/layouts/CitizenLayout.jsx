@@ -16,6 +16,10 @@ export default function CitizenLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Skip Navigation Link for Accessibility */}
+      <a href="#main-content" className="skip-nav">
+        Skip to main content
+      </a>
       <CitizenTopBar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -32,7 +36,7 @@ export default function CitizenLayout({ children }) {
       )}
 
       {/* Main content */}
-      <main className="lg:ml-72 pt-16">{children}</main>
+      <main id="main-content" className="lg:ml-72 pt-16" tabIndex={-1}>{children}</main>
     </div>
   );
 }

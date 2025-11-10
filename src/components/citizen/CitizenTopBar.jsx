@@ -1,20 +1,27 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, User, ChevronDown, Menu, X, LogOut, Settings } from "lucide-react";
+import { Bell, User, ChevronDown, Menu, X, LogOut, Settings, Languages } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import CustomButton from "../ui/Button";
 
 export default function CitizenTopBar({ sidebarOpen, setSidebarOpen, isScrolled }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const languageDropdownRef = useRef(null);
   const { logout } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const navigate = useNavigate();
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
+      }
+      if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target)) {
+        setLanguageDropdownOpen(false);
       }
     }
 
@@ -62,6 +69,50 @@ export default function CitizenTopBar({ sidebarOpen, setSidebarOpen, isScrolled 
             <CustomButton variant="icon">
               <Bell className="w-5 h-5" />
             </CustomButton>
+            
+            {/* Language Dropdown */}
+            <div className="relative" ref={languageDropdownRef}>
+              <CustomButton
+                variant="icon"
+                onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+                title="Change Language"
+                aria-label="Change Language"
+              >
+                <Languages className="w-5 h-5" />
+              </CustomButton>
+              
+              {languageDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <button
+                    onClick={() => {
+                      setLanguage('en');
+                      setLanguageDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                      language === 'en'
+                        ? 'bg-green-50 text-green-700 font-medium'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLanguage('ur');
+                      setLanguageDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                      language === 'ur'
+                        ? 'bg-green-50 text-green-700 font-medium'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    اردو
+                  </button>
+                </div>
+              )}
+            </div>
+            
             {/* User Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <CustomButton

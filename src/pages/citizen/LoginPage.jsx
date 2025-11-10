@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 function LoginPage() {
-  const [language, setLanguage] = useState("English");
+  const { language, setLanguage, t } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -109,47 +110,10 @@ function LoginPage() {
       {/* Right Panel - Login Form */}
       <div className="w-full lg:w-2/5 bg-white flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
-          {/* Language Toggle */}
-          <div className="flex justify-end mb-6">
-            <div className="inline-flex bg-gray-100 rounded-lg p-1 gap-1">
-              <button
-                type="button"
-                onClick={() => setLanguage("English")}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  language === "English"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage("Urdu")}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  language === "Urdu"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                اردو
-              </button>
-            </div>
-          </div>
-
           {/* Title */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back.
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">
+            {t("auth.welcomeBack")}
           </h1>
-          <p className="text-gray-600 mb-8">
-            Don't have an account?{" "}
-            <Link
-              to="/citizen/signup"
-              className="text-green-600 hover:text-green-700 font-medium"
-            >
-              Sign up
-            </Link>
-          </p>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">

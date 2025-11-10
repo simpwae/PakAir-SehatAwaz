@@ -1,4 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useAQI } from "../../context/AQIContext";
+import { useLanguage } from "../../context/LanguageContext";
+import { translations } from "../../utils/translations";
 
 const AQI_LEVELS = [
   {
@@ -130,84 +133,77 @@ function getLevelFromAQI(aqi) {
 }
 
 export default function HealthGuidance() {
-  // Read AQI from localStorage (set by map/dashboard) or default to a Peshawar sample
-  const [aqi, setAqi] = useState(() => {
-    const stored = localStorage.getItem("current_aqi");
-    if (stored) return Number(stored);
-    return 132; // sensible default for Peshawar
-  });
+  // Get AQI from context
+  const { aqi, getAQIColor, getAQIStatus, getAQILevel } = useAQI();
+  const { t, language } = useLanguage();
+  const levelKey = useMemo(() => getAQILevel(), [aqi, getAQILevel]);
+  const currentLevel = AQI_LEVELS.find((l) => l.key === levelKey) || AQI_LEVELS[1];
 
-  const levelKey = useMemo(() => getLevelFromAQI(aqi), [aqi]);
+  // Get translated guidance or fallback to English
+  const getGuidance = (type) => {
+    const level = levelKey || currentLevel.key;
+    
+    // Try to get from translations object directly
+    try {
+      const guidance = translations[language]?.health?.guidance?.[level]?.[type];
+      if (guidance && Array.isArray(guidance)) {
+        return guidance;
+      }
+    } catch (e) {
+      // Fallback to English
+    }
+    
+    // Fallback to English guidance
+    return GUIDANCE[level]?.[type] || [];
+  };
 
-  // Allow manual quick-select for testing / user override
-  useEffect(() => {
-    // When aqi changes store it so other parts of app can use it
-    if (!isNaN(aqi)) localStorage.setItem("current_aqi", String(aqi));
-  }, [aqi]);
-
-  const currentLevel =
-    AQI_LEVELS.find((l) => l.key === levelKey) || AQI_LEVELS[0];
+  const dos = getGuidance('dos');
+  const donts = getGuidance('donts');
 
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-2">
-        Health Guidance — Peshawar, Pakistan
+        {t("health.title")}
       </h1>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div className="mb-4">
         <div className="flex items-center gap-3">
           <div className={`w-3 h-3 rounded-full ${currentLevel.color}`} />
           <div>
-            <div className="text-sm text-gray-600">Current AQI</div>
+            <div className="text-sm text-gray-600">{t("health.currentAQI")}</div>
             <div className="text-lg font-bold">
-              {isNaN(aqi) ? "—" : aqi}{" "}
+              {aqi}{" "}
               <span className="text-sm font-normal ml-2 text-gray-500">
-                ({currentLevel.text})
+                ({getAQIStatus()})
               </span>
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600">
-            Adjust AQI (for testing)
-          </label>
-          <input
-            type="number"
-            value={aqi}
-            onChange={(e) => setAqi(Number(e.target.value))}
-            className="w-24 px-2 py-1 border rounded-md"
-          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white rounded-lg p-4 shadow border">
-          <h3 className="text-md font-semibold mb-2">Recommended DO's</h3>
+          <h3 className="text-md font-semibold mb-2">{t("health.recommendedDos")}</h3>
           <ul className="list-inside list-disc space-y-2 text-sm text-gray-700">
-            {(GUIDANCE[levelKey || currentLevel.key]?.dos || []).map((d, i) => (
+            {dos.map((d, i) => (
               <li key={i}>{d}</li>
             ))}
           </ul>
         </div>
 
         <div className="bg-white rounded-lg p-4 shadow border">
-          <h3 className="text-md font-semibold mb-2">Recommended DON'Ts</h3>
+          <h3 className="text-md font-semibold mb-2">{t("health.recommendedDonts")}</h3>
           <ul className="list-inside list-disc space-y-2 text-sm text-gray-700">
-            {(GUIDANCE[levelKey || currentLevel.key]?.donts || []).map(
-              (d, i) => (
-                <li key={i}>{d}</li>
-              )
-            )}
+            {donts.map((d, i) => (
+              <li key={i}>{d}</li>
+            ))}
           </ul>
         </div>
       </div>
 
       <div className="mt-6 text-sm text-gray-600">
         <p>
-          These recommendations are tailored for residents of Peshawar and
-          Pakistan. Follow local health advisories and consult healthcare
-          professionals for personalized advice.
+          {t("health.disclaimer")}
         </p>
       </div>
     </div>

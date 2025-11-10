@@ -177,8 +177,8 @@ export default function ReportSmog() {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-xl font-semibold mb-2">Report Your Local Conditions</h1>
-      <p className="text-sm text-gray-500 mb-6">Upload a photo or short video (max 20MB).</p>
+      <h1 className="text-xl font-semibold mb-2" id="report-title">Report Your Local Conditions</h1>
+      <p className="text-sm text-gray-500 mb-6" aria-describedby="report-title">Upload a photo or short video (max 20MB).</p>
 
       {success && (
         <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm">
@@ -197,21 +197,31 @@ export default function ReportSmog() {
           onDragOver={(e) => e.preventDefault()}
           onDrop={onDrop}
           className="border-2 border-dashed rounded-lg p-8 text-center bg-gray-50 hover:bg-gray-100 transition-colors"
+          role="button"
+          tabIndex={0}
+          aria-label="File upload area"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
         >
-          <div className="text-5xl mb-2">☁️</div>
+          <div className="text-5xl mb-2" aria-hidden="true">☁️</div>
           <p className="text-sm text-gray-600 mb-3">
             Drag and drop files here, or
             <button
-              className="mx-1 text-green-700 underline"
+              className="mx-1 text-green-700 underline focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
               onClick={() => inputRef.current?.click()}
               type="button"
+              aria-label="Browse files"
             >
               click to browse
             </button>
           </p>
           <p className="text-xs text-gray-400">Supported: JPG, PNG, MP4. Max 20MB</p>
           {fileName && (
-            <div className="mt-3 text-xs text-gray-600 font-medium">Selected: {fileName}</div>
+            <div className="mt-3 text-xs text-gray-600 font-medium" role="status" aria-live="polite">Selected: {fileName}</div>
           )}
           <input
             ref={inputRef}
@@ -220,6 +230,7 @@ export default function ReportSmog() {
             accept="image/*,video/mp4"
             hidden
             required
+            aria-label="Upload media file"
           />
         </div>
 
@@ -318,7 +329,8 @@ export default function ReportSmog() {
           <button
             type="submit"
             disabled={isLoading}
-            className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors"
+            className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+            aria-label={isLoading ? "Submitting report" : "Submit report"}
           >
             {isLoading ? "Submitting..." : "Submit Report / جمع کروائیں"}
           </button>

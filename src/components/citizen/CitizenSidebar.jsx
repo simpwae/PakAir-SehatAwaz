@@ -1,19 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, MapPin, FileText, Heart, Map, Settings, ChevronLeft } from "lucide-react";
+import { LayoutDashboard, MapPin, FileText, Heart, Map, Settings, ChevronLeft, Languages } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function CitizenSidebar({ isOpen, setOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { t, language, toggleLanguage } = useLanguage();
 
   const navigationItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/citizen/dashboard" },
-    { icon: MapPin, label: "Report Smog", path: "/citizen/report" },
-    { icon: Heart, label: "Health Guidance", path: "/citizen/health" },
-    { icon: Map, label: "Regional Map", path: "/citizen/map" },
-    { icon: Settings, label: "Settings", path: "/citizen/settings" },
+    { icon: LayoutDashboard, label: t("nav.dashboard"), path: "/citizen/dashboard" },
+    { icon: MapPin, label: t("nav.report"), path: "/citizen/report" },
+    { icon: Heart, label: t("nav.health"), path: "/citizen/health" },
+    { icon: Map, label: t("nav.map"), path: "/citizen/map" },
+    { icon: Settings, label: t("nav.settings"), path: "/citizen/settings" },
   ];
 
   const handleLogout = () => {
@@ -67,8 +69,20 @@ export default function CitizenSidebar({ isOpen, setOpen }) {
         })}
       </nav>
 
+      {/* Language Toggle */}
+      <div className="mt-auto px-6 lg:px-0 mb-4">
+        <button
+          onClick={toggleLanguage}
+          className="flex w-full gap-3 items-center rounded-md px-3 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+          aria-label="Toggle language"
+        >
+          <Languages className="w-5 h-5" />
+          <span className="ml-2">{language === 'en' ? 'اردو' : 'English'}</span>
+        </button>
+      </div>
+
       {/* Help Section */}
-      <div className="mt-auto px-6 lg:px-0 p-4">
+      <div className="px-6 lg:px-0 p-4">
         <div className="bg-gray-800 rounded-lg p-4 shadow-md">
           <h3 className="text-sm font-semibold text-white mb-2">Need Help?</h3>
           <p className="text-xs text-gray-300">

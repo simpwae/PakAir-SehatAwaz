@@ -1,28 +1,36 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import NationalDashboard from "../pages/official/NationalDashboard";
-import SettingsPage from "../pages/official/SettingsPage";
-import LoginOfficial from "../pages/official/LoginOfficial";
-import LoginPage from "../pages/citizen/LoginPage";
-import SignupPage from "../pages/citizen/SignupPage";
-import Dashboard from "../pages/citizen/Dashboard";
-import CitizenHealthGuidance from "../pages/citizen/HealthGuidance";
-import CitizenRegionalMap from "../pages/citizen/RegionalMap";
-import CitizenReportSmog from "../pages/citizen/ReportSmog";
-import CitizenSettings from "../pages/citizen/Settings";
-import NavigationSidebar from "../components/NavigationSidebar";
-import TopNavigationBar from "../components/TopNavigationBar";
+import { lazy, Suspense } from "react";
+import ProtectedRoute from "../components/ProtectedRoute";
 import CitizenLayout from "../layouts/CitizenLayout";
 import OfficialLayout from "../layouts/OfficialLayout";
-import ProtectedRoute from "../components/ProtectedRoute";
-import { useState } from "react";
-import Logout from "../pages/Logout";
+
+// Lazy load components for code splitting
+const NationalDashboard = lazy(() => import("../pages/official/NationalDashboard"));
+const SettingsPage = lazy(() => import("../pages/official/SettingsPage"));
+const LoginOfficial = lazy(() => import("../pages/official/LoginOfficial"));
+const LoginPage = lazy(() => import("../pages/citizen/LoginPage"));
+const SignupPage = lazy(() => import("../pages/citizen/SignupPage"));
+const Dashboard = lazy(() => import("../pages/citizen/Dashboard"));
+const CitizenHealthGuidance = lazy(() => import("../pages/citizen/HealthGuidance"));
+const CitizenRegionalMap = lazy(() => import("../pages/citizen/RegionalMap"));
+const CitizenReportSmog = lazy(() => import("../pages/citizen/ReportSmog"));
+const CitizenSettings = lazy(() => import("../pages/citizen/Settings"));
+const Logout = lazy(() => import("../pages/Logout"));
+
+// Loading component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+      <p className="mt-4 text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
 
 function Routeee() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isScrolled] = useState(false);
-
   return (
-    <Routes>
+    <Suspense fallback={<LoadingFallback />}>
+      <Routes>
       {/* Public landing route - redirects based on auth status */}
       <Route
         path="/"
@@ -121,7 +129,8 @@ function Routeee() {
           </ProtectedRoute>
         }
       />
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 }
 
