@@ -30,7 +30,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), copyPWAFiles()],
   build: {
     // Enable minification and tree-shaking
-    minify: "terser",
+    // use default esbuild minifier (terser optional)
     target: "es2015",
     sourcemap: false,
     // Optimize chunk size
@@ -40,7 +40,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           "react-vendor": ["react", "react-dom", "react-router-dom"],
-          leaflet: ["leaflet"],
         },
       },
     },
