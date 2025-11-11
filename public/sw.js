@@ -1,109 +1,102 @@
-// Service Worker for PakAir PWA
-const CACHE_NAME = 'pakair-v1';
-const RUNTIME_CACHE = 'pakair-runtime-v1';
+// Service Worker for PakAir PWA (network-first, production only)
+const IS_DEV =
+  self.location.hostname === "localhost" ||
+  self.location.hostname.startsWith("192.168");
+const CACHE_NAME = "pakair-v2";
+const RUNTIME_CACHE = "pakair-runtime-v2";
 
-// Assets to cache on install
-const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/assets/index.css',
-  '/assets/index.js',
-];
+// Only precache in production builds
+const PRECACHE_ASSETS = IS_DEV ? [] : ["/", "/index.html"];
 
-// Install event - cache assets
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
+  if (IS_DEV) {
+    // Skip all caching in dev to avoid stale resources
+    self.skipWaiting();
+    return;
+  }
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.log('Cache addAll failed:', err);
-      });
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
   );
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((cacheName) => {
-            return cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE;
-          })
-          .map((cacheName) => {
-            return caches.delete(cacheName);
-          })
-      );
-    })
+    caches
+      .keys()
+      .then((cacheNames) =>
+        Promise.all(
+          cacheNames
+            .filter((c) => c !== CACHE_NAME && c !== RUNTIME_CACHE)
+            .map((c) => caches.delete(c))
+        )
+      )
   );
   self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
-self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
-    return;
+// Network-first strategy for HTML/JS/CSS; cache-first only for icons/images in prod
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+
+  // Always bypass API & dev mode caching
+  if (url.pathname.startsWith("/api") || IS_DEV) {
+    return; // default browser fetch
   }
 
-  // Skip API requests (always fetch from network)
-  if (event.request.url.includes('/api/')) {
-    return;
-  }
+  const isStatic = url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i);
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(event.request)
-        .then((response) => {
-          // Don't cache if not a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
+  if (isStatic) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((resp) => {
+          if (resp && resp.status === 200) {
+            const copy = resp.clone();
+            caches
+              .open(RUNTIME_CACHE)
+              .then((cache) => cache.put(event.request, copy));
           }
-
-          // Clone the response
-          const responseToCache = response.clone();
-
-          caches.open(RUNTIME_CACHE).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-
-          return response;
-        })
-        .catch(() => {
-          // Return offline page if available
-          if (event.request.destination === 'document') {
-            return caches.match('/index.html');
-          }
+          return resp;
         });
-    })
+      })
+    );
+    return;
+  }
+
+  // Network-first for documents and assets
+  event.respondWith(
+    fetch(event.request)
+      .then((resp) => {
+        if (resp && resp.status === 200 && resp.type === "basic") {
+          const copy = resp.clone();
+          caches
+            .open(RUNTIME_CACHE)
+            .then((cache) => cache.put(event.request, copy));
+        }
+        return resp;
+      })
+      .catch(() =>
+        caches
+          .match(event.request)
+          .then((c) => c || caches.match("/index.html"))
+      )
   );
 });
 
-// Handle push notifications (for future use)
-self.addEventListener('push', (event) => {
+self.addEventListener("push", (event) => {
   const options = {
-    body: event.data ? event.data.text() : 'New air quality alert',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
+    body: event.data ? event.data.text() : "New air quality alert",
+    icon: "/icon-192.png",
+    badge: "/icon-192.png",
     vibrate: [200, 100, 200],
-    tag: 'air-quality-alert',
+    tag: "air-quality-alert",
   };
-
-  event.waitUntil(
-    self.registration.showNotification('PakAir Alert', options)
-  );
+  event.waitUntil(self.registration.showNotification("PakAir Alert", options));
 });
 
-// Handle notification clicks
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow('/citizen/dashboard')
-  );
+  event.waitUntil(clients.openWindow("/citizen/dashboard"));
 });
-

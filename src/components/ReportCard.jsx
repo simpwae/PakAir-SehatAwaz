@@ -1,7 +1,8 @@
+import { memo } from "react";
 import { MapPin, Clock } from "lucide-react";
 import VerifiedBadge from "./ui/VerifiedBadge";
 
-export default function ReportCard({ report }) {
+function ReportCard({ report }) {
   return (
     <div className="group bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300">
       <div className="relative overflow-hidden">
@@ -40,3 +41,5 @@ export default function ReportCard({ report }) {
     </div>
   );
 }
+
+export default memo(ReportCard);

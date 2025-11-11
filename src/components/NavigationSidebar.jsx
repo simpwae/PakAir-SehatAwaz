@@ -5,13 +5,27 @@ import {
   HeartPulse,
   Map as MapIcon,
   CloudFog,
+  Database,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import CustomButton from "./ui/Button";
 
 const navigationItems = [
-  { icon: Globe, label: "National Dashboard", path: "/official/national-dashboard" },
-  { icon: SettingsIcon, label: "Settings", path: "/official/settings" },
+  {
+    icon: Globe,
+    label: "National Dashboard",
+    path: "/official/national-dashboard",
+  },
+  {
+    icon: Database,
+    label: "Model Data",
+    path: "/official/model-data",
+  },
+  {
+    icon: SettingsIcon,
+    label: "Settings",
+    path: "/official/settings",
+  },
 ];
 
 export default function NavigationSidebar({ isOpen, setOpen }) {

@@ -49,9 +49,29 @@ export default defineConfig({
     port: 3001,
     strictPort: true,
     host: true,
+    hmr: {
+      protocol: "ws",
+      host: "localhost",
+      port: 3001,
+    },
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+      "Surrogate-Control": "no-store",
+    },
   },
   // Performance optimizations
   optimizeDeps: {
-    include: ["react", "react-dom", "react-router-dom"],
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "axios",
+      "lucide-react",
+    ],
+    exclude: [],
   },
+  // Improve caching
+  cacheDir: "node_modules/.vite",
 });

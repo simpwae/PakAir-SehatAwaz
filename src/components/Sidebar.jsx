@@ -1,9 +1,11 @@
-import { Globe, MapPin, Bell, User } from "lucide-react";
+import { Globe, MapPin, Bell, User, Database } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { memo, useCallback } from "react";
 
-export default function Sidebar({ isOpen }) {
+function Sidebar({ isOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const handleNav = useCallback((path) => navigate(path), [navigate]);
   return (
     <aside
       className={`fixed top-0 left-0 h-screen w-72 bg-green-700 flex flex-col px-6 py-4 text-white shadow-xl transition-transform duration-300 ease-in-out ${
@@ -20,16 +22,16 @@ export default function Sidebar({ isOpen }) {
 
       <nav className="flex flex-col gap-2">
         <button
-          onClick={() => navigate("/national-dashboard")}
+          onClick={() => handleNav("/official/national-dashboard")}
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-            location.pathname === "/national-dashboard"
+            location.pathname === "/official/national-dashboard"
               ? "bg-white/20 text-white font-semibold"
               : "text-gray-100 hover:bg-white/10"
           }`}
         >
           <Globe
             className={`w-5 h-5 ${
-              location.pathname === "/national-dashboard"
+              location.pathname === "/official/national-dashboard"
                 ? "text-white"
                 : "text-gray-200"
             }`}
@@ -38,16 +40,16 @@ export default function Sidebar({ isOpen }) {
         </button>
 
         <button
-          onClick={() => navigate("/citizen-reports")}
+          onClick={() => handleNav("/official/citizen-reports")}
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-            location.pathname === "/citizen-reports"
+            location.pathname === "/official/citizen-reports"
               ? "bg-white/20 text-white font-semibold"
               : "text-gray-100 hover:bg-white/10"
           }`}
         >
           <MapPin
             className={`w-5 h-5 ${
-              location.pathname === "/citizen-reports"
+              location.pathname === "/official/citizen-reports"
                 ? "text-white"
                 : "text-gray-200"
             }`}
@@ -56,16 +58,34 @@ export default function Sidebar({ isOpen }) {
         </button>
 
         <button
-          onClick={() => navigate("/national-dashboard")}
+          onClick={() => handleNav("/official/model-data")}
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-            location.pathname === "/national-dashboard"
+            location.pathname === "/official/model-data"
+              ? "bg-white/20 text-white font-semibold"
+              : "text-gray-100 hover:bg-white/10"
+          }`}
+        >
+          <Database
+            className={`w-5 h-5 ${
+              location.pathname === "/official/model-data"
+                ? "text-white"
+                : "text-gray-200"
+            }`}
+          />
+          <span className="font-medium">Model Data</span>
+        </button>
+
+        <button
+          onClick={() => handleNav("/official/policy-advisory")}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            location.pathname === "/official/policy-advisory"
               ? "bg-white/20 text-white font-semibold"
               : "text-gray-100 hover:bg-white/10"
           }`}
         >
           <Bell
             className={`w-5 h-5 ${
-              location.pathname === "/national-dashboard"
+              location.pathname === "/official/policy-advisory"
                 ? "text-white"
                 : "text-gray-200"
             }`}
@@ -74,16 +94,18 @@ export default function Sidebar({ isOpen }) {
         </button>
 
         <button
-          onClick={() => navigate("/settings")}
+          onClick={() => handleNav("/official/settings")}
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-            location.pathname === "/settings"
+            location.pathname === "/official/settings"
               ? "bg-white/20 text-white font-semibold"
               : "text-gray-100 hover:bg-white/10"
           }`}
         >
           <User
             className={`w-5 h-5 ${
-              location.pathname === "/settings" ? "text-white" : "text-gray-200"
+              location.pathname === "/official/settings"
+                ? "text-white"
+                : "text-gray-200"
             }`}
           />
           <span className="font-medium">Settings</span>
@@ -103,3 +125,5 @@ export default function Sidebar({ isOpen }) {
     </aside>
   );
 }
+
+export default memo(Sidebar);
